@@ -3,7 +3,7 @@
   "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "/arsched (1).html"
+      "destination": "/index.html"
     }
   ]
 }
