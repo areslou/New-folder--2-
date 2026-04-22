@@ -102,38 +102,38 @@ const C = [
 // ─── COURSE DATA ─────────────────────────────────────────
 const courses = [
   {id:'cpecog1', code:'CPECOG1', name:'CPE Elective 1 Lecture', type:'Lecture', cr:2, ci:0, secs:[
-    {id:'E21', slots:[{d:'TUE',s:870,e:930},{d:'FRI',s:870,e:930}], en:4,  cap:22},
-    {id:'E22', slots:[{d:'TUE',s:450,e:510},{d:'FRI',s:450,e:510}], en:2,  cap:22},
-    {id:'E20', slots:[{d:'TUE',s:555,e:615},{d:'FRI',s:555,e:615}], en:21, cap:22},
+    {id:'E21', prof:'Jay Robert Del Rosario', slots:[{d:'TUE',s:870,e:930},{d:'FRI',s:870,e:930}], en:4,  cap:22},
+    {id:'E22', prof:'Jay Robert Del Rosario', slots:[{d:'TUE',s:450,e:510},{d:'FRI',s:450,e:510}], en:2,  cap:22},
+    {id:'E20', prof:'Jay Robert Del Rosario', slots:[{d:'TUE',s:555,e:615},{d:'FRI',s:555,e:615}], en:21, cap:22},
   ]},
   {id:'dsigpro', code:'DSIGPRO', name:'Digital Signal Processing', type:'Lecture', cr:3, ci:1, secs:[
-    {id:'E32', slots:[{d:'MON',s:870,e:960},{d:'THU',s:870,e:960}],   en:13, cap:30},
-    {id:'E31', slots:[{d:'MON',s:975,e:1065},{d:'THU',s:975,e:1065}], en:7,  cap:30},
-    {id:'E30', slots:[{d:'MON',s:660,e:750},{d:'THU',s:660,e:750}],   en:14, cap:30},
+    {id:'E32', prof:'Gerald Arada', slots:[{d:'MON',s:870,e:960},{d:'THU',s:870,e:960}],   en:13, cap:30},
+    {id:'E31', prof:'Gerald Arada', slots:[{d:'MON',s:975,e:1065},{d:'THU',s:975,e:1065}], en:7,  cap:30},
+    {id:'E30', prof:'Gerald Arada', slots:[{d:'MON',s:660,e:750},{d:'THU',s:660,e:750}],   en:14, cap:30},
   ]},
   {id:'ochesaf', code:'OCHESAF', name:'Basic Occ. Health & Safety', type:'Lecture', cr:3, ci:2, secs:[
-    {id:'E21', slots:[{d:'MON',s:870,e:960},{d:'THU',s:870,e:960}],   en:6,  cap:22},
-    {id:'E20', slots:[{d:'MON',s:555,e:645},{d:'THU',s:555,e:645}],   en:7,  cap:22},
-    {id:'E22', slots:[{d:'MON',s:765,e:855},{d:'THU',s:765,e:855}],   en:16, cap:22},
+    {id:'E21', prof:'Antonette Ilahi', slots:[{d:'MON',s:870,e:960},{d:'THU',s:870,e:960}],   en:6,  cap:22},
+    {id:'E20', prof:'Antonette Ilahi', slots:[{d:'MON',s:555,e:645},{d:'THU',s:555,e:645}],   en:7,  cap:22},
+    {id:'E22', prof:'Antonette Ilahi', slots:[{d:'MON',s:765,e:855},{d:'THU',s:765,e:855}],   en:16, cap:22},
   ]},
   {id:'lbycpf3', code:'LBYCPF3', name:'CPE Elective 1 Laboratory', type:'Lab', cr:1, ci:3, secs:[
-    {id:'E25', slots:[{d:'MON',s:870,e:1050}], en:12, cap:25},
-    {id:'E26', slots:[{d:'MON',s:570,e:750}],  en:4,  cap:25},
-    {id:'E27', slots:[{d:'WED',s:570,e:750}],  en:10, cap:25},
+    {id:'E25', prof:'Donabel Abuan',  slots:[{d:'MON',s:870,e:1050}], en:12, cap:25},
+    {id:'E26', prof:'Leonard Ambata', slots:[{d:'MON',s:570,e:750}],  en:4,  cap:25},
+    {id:'E27', prof:'Donabel Abuan',  slots:[{d:'WED',s:570,e:750}],  en:10, cap:25},
   ]},
   {id:'cpeprac', code:'CPEPRAC', name:'CPE Laws & Professional Practice', type:'Lecture', cr:2, ci:4, secs:[
-    {id:'E22', slots:[{d:'TUE',s:870,e:930},{d:'FRI',s:870,e:930}], en:11, cap:22},
-    {id:'E20', slots:[{d:'TUE',s:660,e:720},{d:'FRI',s:660,e:720}], en:7,  cap:22},
-    {id:'E21', slots:[{d:'TUE',s:765,e:825},{d:'FRI',s:765,e:825}], en:10, cap:22},
+    {id:'E22', prof:'Armie Pakzad', slots:[{d:'TUE',s:870,e:930},{d:'FRI',s:870,e:930}], en:11, cap:22},
+    {id:'E20', prof:'Armie Pakzad', slots:[{d:'TUE',s:660,e:720},{d:'FRI',s:660,e:720}], en:7,  cap:22},
+    {id:'E21', prof:'Armie Pakzad', slots:[{d:'TUE',s:765,e:825},{d:'FRI',s:765,e:825}], en:10, cap:22},
   ]},
   {id:'lbycpa4', code:'LBYCPA4', name:'DSP Laboratory', type:'Lab', cr:1, ci:5, secs:[
-    {id:'E25', slots:[{d:'TUE',s:870,e:1050}], en:17, cap:25},
-    {id:'E26', slots:[{d:'TUE',s:450,e:630}],  en:10, cap:25},
-    {id:'E27', slots:[{d:'TUE',s:660,e:840}],  en:10, cap:25},
+    {id:'E25', prof:'Dino Ligutan',   slots:[{d:'TUE',s:870,e:1050}], en:17, cap:25},
+    {id:'E26', prof:'Reggie Gustillo',slots:[{d:'TUE',s:450,e:630}],  en:10, cap:25},
+    {id:'E27', prof:'Reggie Gustillo',slots:[{d:'TUE',s:660,e:840}],  en:10, cap:25},
   ]},
   {id:'thscp4a', code:'THSCP4A', name:'CPE Practice and Design 1', type:'Capstone', cr:1, ci:6, secs:[
-    {id:'E40', slots:[{d:'SAT',s:1080,e:1275}], en:24, cap:40},
-    {id:'E41', slots:[{d:'SUN',s:600,e:630}],   en:2,  cap:40},
+    {id:'E40', prof:'Ronnel Agulto', slots:[{d:'SAT',s:1080,e:1275}], en:24, cap:40},
+    {id:'E41', prof:'Ronnel Agulto', slots:[{d:'SUN',s:600,e:630}],   en:2,  cap:40},
   ]},
 ];
 
@@ -180,7 +180,7 @@ function getSlots(sel) {
     const c = courses.find(x => x.id === cid);
     const sec = c?.secs.find(x => x.id === sid);
     if (!sec) return;
-    sec.slots.forEach(slot => out.push({ ...slot, cid, color: C[c.ci] }));
+    sec.slots.forEach(slot => out.push({ ...slot, cid, sid, prof: sec.prof, color: C[c.ci] }));
   });
   return out;
 }
@@ -233,11 +233,12 @@ function renderCards(sel) {
       const days = [...new Set(sec.slots.map(s => s.d))].join(' · ');
       return `<button class="sbtn" onclick="pick('${course.id}','${sec.id}')"
         style="border:${on ? `1.5px solid ${c.bd}` : '1px solid #e5e5e5'};background:${on ? c.bg : 'transparent'};">
-        <div>
+        <div style="flex:1;min-width:0;">
           <div style="font-size:12px;font-weight:600;color:${on ? c.tx : '#1a1a1a'};">Sec ${sec.id}</div>
-          <div style="font-size:10px;color:#999;">${days}</div>
+          <div style="font-size:10px;color:#999;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${days}</div>
+          <div style="font-size:10px;color:${on ? c.tx : '#aaa'};opacity:0.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">👤 ${esc(sec.prof)}</div>
         </div>
-        <div style="font-size:11px;color:${af ? '#c0392b' : '#999'};font-weight:${af ? '600' : '400'};">
+        <div style="font-size:11px;color:${af ? '#c0392b' : '#999'};font-weight:${af ? '600' : '400'};flex-shrink:0;margin-left:6px;">
           ${sec.en}/${sec.cap}${af ? ' ⚠' : ''}
         </div>
       </button>`;
@@ -284,11 +285,16 @@ function renderCal(sel) {
       const top = (slot.s - START) * PPM, ht = (slot.e - slot.s) * PPM;
       const course = courses.find(c => c.id === slot.cid);
       const isC = conflicts.has(slot.cid), col = slot.color;
+      // Show prof if block is tall enough (≥ 55px)
+      const profLine = ht >= 55
+        ? `<div style="font-size:8.5px;color:${isC ? '#c0392b' : col.tx};opacity:0.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;">👤 ${esc(slot.prof)}</div>`
+        : '';
       return `<div style="position:absolute;left:2px;right:2px;top:${top}px;height:${ht}px;
         background:${col.bg};border:${isC ? '1.5px solid #e74c3c' : `1px solid ${col.bd}`};
         border-radius:5px;overflow:hidden;padding:3px 5px;z-index:2;box-sizing:border-box;">
         <div style="font-size:10px;font-weight:600;color:${isC ? '#c0392b' : col.tx};line-height:1.3;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">${course.code}</div>
         ${ht > 28 ? `<div style="font-size:9px;color:${col.tx};opacity:0.8;white-space:nowrap;overflow:hidden;">${fmt(slot.s)}–${fmt(slot.e)}</div>` : ''}
+        ${profLine}
         ${isC ? `<div style="position:absolute;top:3px;right:3px;width:5px;height:5px;border-radius:50%;background:#e74c3c;"></div>` : ''}
       </div>`;
     }).join('');
