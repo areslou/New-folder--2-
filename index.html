@@ -60,15 +60,25 @@
 
 <div class="course-grid" id="cgrid"></div>
 
-<div class="cal-wrap">
-  <div class="cal-hdr" id="calhdr"></div>
-  <div class="cal-body">
-    <div id="taxs" style="width:46px;flex-shrink:0;position:relative;"></div>
-    <div id="calb" style="flex:1;display:flex;position:relative;"></div>
-  </div>
-</div>
+<div style="display:flex;gap:10px;align-items:flex-start;">
 
-<p class="hint">Click a section to add it · Click again to remove · Red outline = time conflict · ⚠ = almost full</p>
+  <div id="sel-list" style="width:220px;flex-shrink:0;background:#fff;border:1px solid #e5e5e5;border-radius:10px;padding:12px;min-height:120px;">
+    <div style="font-size:11px;font-weight:700;color:#aaa;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:10px;">Selected Classes</div>
+    <div id="sel-list-body" style="font-size:12px;color:#555;"><span style="color:#ccc;font-size:11px;">Nothing selected yet.</span></div>
+  </div>
+
+  <div style="flex:1;min-width:0;">
+    <div class="cal-wrap">
+      <div class="cal-hdr" id="calhdr"></div>
+      <div class="cal-body">
+        <div id="taxs" style="width:46px;flex-shrink:0;position:relative;"></div>
+        <div id="calb" style="flex:1;display:flex;position:relative;"></div>
+      </div>
+    </div>
+    <p class="hint">Click a section to add it · Click again to remove · Red outline = time conflict · ⚠ = almost full</p>
+  </div>
+
+</div>
 
 <script>
 // ─── CONSTANTS ───────────────────────────────────────────
@@ -304,12 +314,35 @@ function renderCal(sel) {
   return conflicts;
 }
 
+function renderSidebar(sel) {
+  const body = document.getElementById('sel-list-body');
+  const entries = Object.entries(sel).filter(([, v]) => v);
+  if (!entries.length) {
+    body.innerHTML = `<span style="color:#ccc;font-size:11px;">Nothing selected yet.</span>`;
+    return;
+  }
+  body.innerHTML = entries.map(([cid, sid]) => {
+    const course = courses.find(c => c.id === cid);
+    const sec = course?.secs.find(s => s.id === sid);
+    if (!course || !sec) return '';
+    const col = C[course.ci];
+    // Group slots by time (show unique day combos)
+    const days = [...new Set(sec.slots.map(s => s.d))].join('/');
+    const timeStr = `${fmt(sec.slots[0].s)} – ${fmt(sec.slots[0].e)}`;
+    return `<div style="padding:6px 8px;margin-bottom:5px;border-radius:7px;background:${col.bg};border:1px solid ${col.bd};font-size:11px;color:${col.tx};font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+      ${course.code} – Sec ${sec.id} – ${timeStr}
+    </div>`;
+  }).join('');
+}
+
+
 function render() {
   const sel = getActiveSel();
   renderTabs();
   const conflicts = renderCal(sel);
   renderStats(sel, conflicts);
   renderCards(sel);
+  renderSidebar(sel);
 }
 
 // ─── ACTIONS ─────────────────────────────────────────────
