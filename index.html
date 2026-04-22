@@ -3,749 +3,266 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ArSched — DLSU Schedule Planner</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Schedule Maker — AY 2025-2026 Term 3</title>
 <style>
-:root {
-  --green:#006938; --green-d:#005530; --green-l:#e6f2ec; --green-m:#00a859;
-  --bg:#f5f7f4; --card:#ffffff; --border:#e0e6dd; --border-s:#c5d1c0;
-  --text:#1a2318; --muted:#5a6b55; --dim:#8a9985;
-  --red:#c0392b; --amber:#d97706; --blue:#1d4ed8;
-  --font:'DM Sans',sans-serif; --mono:'DM Mono',monospace;
-  --r:10px; --r-s:7px;
-}
-@media(prefers-color-scheme:dark){
-  :root{
-    --bg:#0e1510; --card:#141f15; --border:#1f2e1f; --border-s:#2d402d;
-    --text:#dde8da; --muted:#7a9a75; --dim:#4a6445;
-    --green-l:#0a1f0e;
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, sans-serif; background: #f5f5f3; color: #1a1a1a; min-height: 100vh; padding: 1.5rem; }
+  h1 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #666; margin-bottom: 1.5rem; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1.25rem; }
+  .stat-card { background: #fff; border: 1px solid #e5e5e5; border-radius: 10px; padding: 12px 1rem; text-align: center; }
+  .stat-label { font-size: 12px; color: #888; margin-bottom: 3px; }
+  .stat-val { font-size: 22px; font-weight: 600; }
+  .course-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.25rem; }
+  .ccard { background: #fff; border-radius: 10px; padding: 12px; transition: border-color 0.15s; }
+  .pill { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px; margin-bottom: 6px; }
+  .sbtn { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; margin-bottom: 4px; cursor: pointer; border-radius: 6px; transition: background 0.1s, border 0.1s; font-family: inherit; width: 100%; background: transparent; text-align: left; }
+  .sbtn:hover { background: #f5f5f3; }
+  .cal-wrap { background: #fff; border: 1px solid #e5e5e5; border-radius: 10px; overflow: hidden; }
+  .cal-hdr { display: flex; background: #fafaf8; border-bottom: 1px solid #e5e5e5; }
+  .cal-body { display: flex; }
+  .hint { margin-top: 8px; font-size: 11px; color: #999; }
+  @media (max-width: 600px) {
+    .course-grid { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: 1fr; }
   }
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px}
-.app{display:grid;grid-template-rows:56px 1fr;height:100vh;overflow:hidden}
-header{display:flex;align-items:center;padding:0 20px;background:var(--card);border-bottom:1px solid var(--border);gap:12px;z-index:20}
-.logo{display:flex;align-items:center;gap:8px;font-size:17px;font-weight:600;color:var(--green)}
-.logo-box{width:28px;height:28px;background:var(--green);border-radius:7px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700}
-.logo-sub{font-size:12px;color:var(--dim);font-weight:400;margin-left:2px}
-.hdr-right{margin-left:auto;display:flex;align-items:center;gap:10px}
-.term-pill{background:var(--green-l);color:var(--green);font-size:11px;font-weight:500;padding:4px 10px;border-radius:20px;font-family:var(--mono)}
-.hdr-btn{background:var(--green);color:#fff;border:none;border-radius:8px;padding:7px 15px;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font);transition:background .15s}
-.hdr-btn:hover{background:var(--green-d)}
-.hdr-btn.outline{background:none;border:1px solid var(--border-s);color:var(--text)}
-.hdr-btn.outline:hover{background:var(--bg)}
-.screen{display:none;height:100%;overflow:hidden}
-.screen.active{display:flex}
-#importScreen{flex-direction:column;align-items:center;justify-content:center;padding:24px;overflow-y:auto}
-.import-card{width:100%;max-width:660px;background:var(--card);border-radius:16px;border:1px solid var(--border);overflow:hidden}
-.import-hero{background:var(--green);padding:28px 32px;position:relative;overflow:hidden}
-.import-hero::before{content:'';position:absolute;right:-40px;top:-40px;width:200px;height:200px;background:rgba(255,255,255,.07);border-radius:50%}
-.import-hero::after{content:'';position:absolute;right:20px;bottom:-60px;width:140px;height:140px;background:rgba(255,255,255,.05);border-radius:50%}
-.import-hero h1{color:#fff;font-size:22px;font-weight:600;position:relative}
-.import-hero p{color:rgba(255,255,255,.8);font-size:13px;margin-top:6px;position:relative;line-height:1.6}
-.import-body{padding:28px 32px}
-.steps{display:flex;flex-direction:column;gap:0}
-.step{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--border)}
-.step:last-child{border-bottom:none}
-.step-num{width:28px;height:28px;background:var(--green-l);color:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;margin-top:2px}
-.step-content{flex:1}
-.step-title{font-size:13px;font-weight:600;color:var(--text)}
-.step-desc{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.55}
-.bookmarklet-wrap{margin-top:12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.bm-link{display:inline-flex;align-items:center;gap:7px;background:var(--green);color:#fff;padding:10px 16px;border-radius:9px;font-size:13px;font-weight:600;text-decoration:none;cursor:grab;border:2px dashed transparent;transition:all .15s;user-select:none;font-family:var(--font);box-shadow:0 2px 8px rgba(0,105,56,.3)}
-.bm-link:hover{border-color:rgba(255,255,255,.5);transform:translateY(-1px)}
-.bm-link:active{cursor:grabbing}
-.bm-hint{font-size:11px;color:var(--dim);line-height:1.5}
-.bm-hint strong{color:var(--muted)}
-.manual-wrap{margin-top:10px}
-.manual-toggle{font-size:11px;color:var(--green);cursor:pointer;text-decoration:underline;background:none;border:none;font-family:var(--font);padding:0}
-.manual-box{display:none;margin-top:8px;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;font-size:11px}
-.manual-box p{color:var(--muted);margin-bottom:6px;line-height:1.6}
-.manual-code{font-family:var(--mono);font-size:10px;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:8px;word-break:break-all;color:var(--text);max-height:80px;overflow-y:auto;line-height:1.4}
-.copy-code-btn{margin-top:6px;font-size:11px;padding:5px 10px;background:var(--green);color:#fff;border:none;border-radius:6px;cursor:pointer;font-family:var(--font)}
-.paste-wrap{margin-top:10px}
-.paste-area{width:100%;height:90px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-s);background:var(--bg);color:var(--text);font-size:12px;font-family:var(--mono);resize:none;outline:none;transition:border-color .15s}
-.paste-area:focus{border-color:var(--green)}
-.paste-area::placeholder{color:var(--dim)}
-.import-actions{display:flex;gap:8px;margin-top:8px}
-.import-btn{flex:1;padding:9px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font);transition:background .15s}
-.import-btn:hover{background:var(--green-d)}
-.import-btn.secondary{background:none;border:1px solid var(--border-s);color:var(--text)}
-.import-btn.secondary:hover{background:var(--bg)}
-.import-error{font-size:12px;color:var(--red);margin-top:8px;display:none;background:#fef2f2;padding:8px 10px;border-radius:6px;border:1px solid #fecaca}
-.import-success{font-size:12px;color:#166534;margin-top:8px;display:none;background:#f0fdf4;padding:8px 10px;border-radius:6px;border:1px solid #bbf7d0}
-.link-pill{display:inline-flex;align-items:center;gap:5px;background:var(--green-l);color:var(--green);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;text-decoration:none;border:1px solid #c0dbc8}
-.link-pill:hover{background:#d4eddf}
-.or-divider{display:flex;align-items:center;gap:10px;margin:20px 0 16px;color:var(--dim);font-size:12px}
-.or-divider::before,.or-divider::after{content:'';flex:1;height:1px;background:var(--border)}
-.demo-notice{background:var(--green-l);border:1px solid #c0dbc8;border-radius:8px;padding:10px 14px;font-size:12px;color:var(--green);display:flex;align-items:flex-start;gap:8px;margin-top:16px}
-#plannerScreen{display:none}
-#plannerScreen.active{display:grid;grid-template-columns:340px 1fr;height:100%;overflow:hidden}
-.left-panel{background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
-.panel-tabs{display:flex;border-bottom:1px solid var(--border);padding:0 10px}
-.ptab{padding:10px 12px;font-size:13px;cursor:pointer;background:none;border:none;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;font-family:var(--font);transition:color .15s;white-space:nowrap}
-.ptab.active{color:var(--green);border-bottom-color:var(--green);font-weight:500}
-.count-badge{display:inline-block;font-size:10px;background:var(--green);color:#fff;padding:1px 6px;border-radius:20px;margin-left:4px;vertical-align:middle}
-.search-wrap{padding:12px;border-bottom:1px solid var(--border)}
-.search-inner{position:relative}
-.search-ico{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--dim);font-size:14px;pointer-events:none}
-.search-in{width:100%;padding:8px 12px 8px 32px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-size:13px;font-family:var(--font);outline:none;transition:border-color .15s}
-.search-in:focus{border-color:var(--green)}
-.list-wrap{flex:1;overflow-y:auto;padding:8px}
-.cc{border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px;background:var(--bg);overflow:hidden;transition:border-color .15s}
-.cc.has-sel{border-color:var(--green)}
-.cc-head{padding:10px 12px;cursor:pointer;display:flex;align-items:flex-start;gap:10px;transition:background .1s}
-.cc-head:hover{background:var(--card)}
-.cc-info{flex:1;min-width:0}
-.cc-code{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--green)}
-.cc-name{font-size:12px;font-weight:500;color:var(--text);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cc-meta{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
-.chip{font-size:10px;padding:2px 7px;border-radius:20px;font-weight:500;background:var(--green-l);color:var(--green)}
-.chip.g{background:var(--border);color:var(--muted)}
-.chev{font-size:11px;color:var(--dim);transition:transform .2s;flex-shrink:0;margin-top:3px}
-.chev.open{transform:rotate(90deg)}
-.secs{border-top:1px solid var(--border);background:var(--card)}
-.sec-row{padding:8px 12px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:38px 1fr auto;gap:8px;align-items:center;cursor:pointer;transition:background .1s;font-size:12px}
-.sec-row:last-child{border-bottom:none}
-.sec-row:hover{background:var(--bg)}
-.sec-row.sel{background:var(--green-l)}
-.sc{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--muted)}
-.sd .ss{font-size:12px;font-weight:500;color:var(--text)}
-.sd .sp{font-size:11px;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sd .sr{font-size:10px;color:var(--dim);font-family:var(--mono)}
-.sr-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
-.slots{font-size:10px;color:var(--dim)}
-.add-btn{font-size:10px;padding:3px 9px;border-radius:20px;border:1px solid var(--green);color:var(--green);background:none;cursor:pointer;font-family:var(--font);transition:all .15s;white-space:nowrap}
-.add-btn:hover,.add-btn.added{background:var(--green);color:#fff}
-.added-list-wrap{flex:1;overflow-y:auto;padding:12px}
-.added-item{display:flex;align-items:center;gap:8px;padding:9px 10px;background:var(--bg);border-radius:8px;margin-bottom:7px;border:1px solid var(--border)}
-.added-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.added-info{flex:1;min-width:0}
-.ai-code{font-family:var(--mono);font-size:11px;color:var(--muted)}
-.ai-name{font-size:12px;font-weight:500;color:var(--text);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ai-sched{font-size:11px;color:var(--muted);margin-top:1px}
-.rm-btn{background:none;border:none;cursor:pointer;color:var(--dim);font-size:18px;line-height:1;padding:2px 4px;border-radius:4px;transition:color .1s}
-.rm-btn:hover{color:var(--red)}
-.empty{text-align:center;padding:40px 16px;color:var(--dim);font-size:13px;line-height:1.7}
-.empty-ico{font-size:30px;margin-bottom:10px}
-.right-panel{display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
-.rtabs{display:flex;background:var(--card);border-bottom:1px solid var(--border);padding:0 16px}
-.rtab{padding:12px 14px;font-size:13px;cursor:pointer;background:none;border:none;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;font-family:var(--font);transition:color .15s}
-.rtab.active{color:var(--green);border-bottom-color:var(--green);font-weight:500}
-.right-content{flex:1;overflow:hidden;position:relative}
-.grid-outer{padding:16px;height:100%;overflow-y:auto}
-.week-grid{display:grid;grid-template-columns:50px repeat(6,1fr);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;background:var(--card);min-width:550px}
-.gd-hdr{padding:7px 4px;text-align:center;font-size:11px;font-weight:600;background:var(--bg);border-bottom:1px solid var(--border);border-right:1px solid var(--border);color:var(--muted)}
-.gd-hdr:last-child{border-right:none}
-.gd-hdr.we{color:var(--amber)}
-.gt-lbl{font-family:var(--mono);font-size:9px;color:var(--dim);padding:0 5px;text-align:right;border-right:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--bg);display:flex;align-items:flex-start;justify-content:flex-end;padding-top:3px}
-.gc{border-right:1px solid var(--border);border-bottom:1px solid var(--border);position:relative}
-.gc:last-child{border-right:none}
-.gb{position:absolute;left:1px;right:1px;border-radius:4px;padding:3px 5px;font-size:9px;font-weight:500;overflow:hidden;display:flex;flex-direction:column;gap:1px;z-index:2}
-.gb-code{font-family:var(--mono);font-size:9px}
-.gb-sec{font-size:8px;opacity:.75}
-.combos-outer{padding:16px;height:100%;overflow-y:auto}
-.combos-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px}
-.combos-title{font-size:15px;font-weight:600}
-.combos-sub{font-size:12px;color:var(--muted);margin-top:2px}
-.sort-sel{font-size:12px;padding:6px 10px;border:1px solid var(--border);border-radius:7px;background:var(--card);color:var(--text);font-family:var(--font);cursor:pointer;outline:none}
-.sort-sel:focus{border-color:var(--green)}
-.combo-card{border:1px solid var(--border);border-radius:var(--r);margin-bottom:9px;background:var(--card);overflow:hidden;cursor:pointer;transition:border-color .15s}
-.combo-card:hover{border-color:var(--green)}
-.combo-card.active{border-color:var(--green);border-width:2px}
-.combo-hdr{padding:9px 14px;display:flex;align-items:center;gap:10px;background:var(--bg)}
-.combo-n{font-family:var(--mono);font-size:11px;color:var(--dim);min-width:26px}
-.combo-tags{display:flex;gap:5px;flex-wrap:wrap;flex:1}
-.combo-tag{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500}
-.combo-time{font-size:11px;color:var(--dim);white-space:nowrap}
-.gen-btn-big{width:100%;padding:10px;background:var(--green);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:500;cursor:pointer;font-family:var(--font);transition:background .15s;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:8px}
-.gen-btn-big:hover{background:var(--green-d)}
-.preview-banner{background:var(--green-l);color:var(--green);font-size:12px;padding:8px 14px;border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:space-between}
-::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--border-s);border-radius:3px}
 </style>
 </head>
 <body>
-<div class="app">
-  <header>
-    <div class="logo">
-      <div class="logo-box">AS</div>
-      ArSched
-      <span class="logo-sub">DLSU Schedule Planner</span>
-    </div>
-    <div class="hdr-right">
-      <span class="term-pill" id="termPill">Term 53 · AY 2025–2026</span>
-      <button class="hdr-btn outline" id="backToImportBtn" style="display:none" onclick="showImport()">+ Import More</button>
-      <button class="hdr-btn" id="genBtnHdr" style="display:none" onclick="switchRTab('combos');generateCombos()">⚡ Generate</button>
-    </div>
-  </header>
 
-  <!-- IMPORT SCREEN -->
-  <div class="screen active" id="importScreen" style="display:flex">
-    <div class="import-card">
-      <div class="import-hero">
-        <h1>📚 Connect to ArChersHub</h1>
-        <p>Pull real course schedules from ArChersHub into your planner. Your login stays on DLSU's servers — this app never sees your password.</p>
-      </div>
-      <div class="import-body">
-        <div class="steps">
+<h1>Schedule Maker</h1>
+<p class="subtitle">AY 2025-2026 · Term 3 · Manila Campus</p>
 
-          <div class="step">
-            <div class="step-num">1</div>
-            <div class="step-content">
-              <div class="step-title">Add the bookmarklet to your browser</div>
-              <div class="step-desc"><strong>Drag</strong> the green button below to your bookmarks bar. It only runs when you click it on ArChersHub — it is completely safe.</div>
-              <div class="bookmarklet-wrap">
-                <a class="bm-link" id="bookmarkletLink" href="#" title="Drag me to your bookmarks bar">
-                  📚 ArSched Importer
-                </a>
-                <div class="bm-hint">
-                  <strong>← Drag this</strong> to your bookmarks bar<br>
-                  (the bar just below your browser address bar)
-                </div>
-              </div>
-              <div class="manual-wrap">
-                <button class="manual-toggle" onclick="toggleManual()">Can't drag? Click here for manual setup ›</button>
-                <div class="manual-box" id="manualBox">
-                  <p>
-                    1. Right-click your bookmarks bar → <strong>Add bookmark</strong> (or "Add page")<br>
-                    2. Set the <strong>Name</strong> to: <code>ArSched Importer</code><br>
-                    3. In the <strong>URL / Address</strong> field, delete whatever is there and paste the code below:
-                  </p>
-                  <div class="manual-code" id="manualCode">Loading…</div>
-                  <button class="copy-code-btn" onclick="copyBookmarkletCode()">📋 Copy Code</button>
-                </div>
-              </div>
-            </div>
-          </div>
+<div class="stats">
+  <div class="stat-card"><p class="stat-label">total units</p><p class="stat-val" id="s-cr">0</p></div>
+  <div class="stat-card"><p class="stat-label">courses added</p><p class="stat-val" id="s-cnt">0 / 7</p></div>
+  <div class="stat-card"><p class="stat-label">conflicts</p><p class="stat-val" id="s-conf" style="color:#22a06b;">none</p></div>
+</div>
 
-          <div class="step">
-            <div class="step-num">2</div>
-            <div class="step-content">
-              <div class="step-title">Open ArChersHub and search for a course</div>
-              <div class="step-desc">
-                Go to ArChersHub Course Finder:
-                <a class="link-pill" href="https://archershub.dlsu.edu.ph/CourseFinder/index/53" target="_blank">🔗 Open Course Finder</a>
-                <br><br>
-                Log in if needed. Search for a course (e.g. <strong>DSIGPRO</strong>) and wait for the <strong>sections table</strong> to appear on screen.
-              </div>
-            </div>
-          </div>
+<div class="course-grid" id="cgrid"></div>
 
-          <div class="step">
-            <div class="step-num">3</div>
-            <div class="step-content">
-              <div class="step-title">Click "📚 ArSched Importer" in your bookmarks bar</div>
-              <div class="step-desc">
-                While the sections table is visible, click the bookmarklet in your bookmarks bar.<br><br>
-                ✅ You should see an alert: <strong>"✓ 3 section(s) for 'DSIGPRO' copied!"</strong><br><br>
-                ❌ Getting an error? <a href="#" style="color:var(--green);font-size:12px" onclick="document.getElementById('troubleshootBox').style.display='block';return false">See troubleshooting below ›</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="step" style="border-bottom:none">
-            <div class="step-num">4</div>
-            <div class="step-content">
-              <div class="step-title">Come back here and import</div>
-              <div class="paste-wrap">
-                <textarea class="paste-area" id="pasteArea" placeholder='Paste the JSON here (it looks like {"course":"DSIGPRO - ...","sections":[...]})&#10;&#10;Or just click "Paste from Clipboard" — no typing needed.'></textarea>
-                <div class="import-error" id="importError"></div>
-                <div class="import-success" id="importSuccess"></div>
-                <div class="import-actions">
-                  <button class="import-btn" onclick="importPasted()">✓ Import Course</button>
-                  <button class="import-btn secondary" onclick="tryClipboard()">📋 Paste from Clipboard</button>
-                </div>
-              </div>
-              <div style="font-size:11px;color:var(--dim);margin-top:8px">↩ Repeat steps 2–4 for each course you want to plan.</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Troubleshoot box -->
-        <div id="troubleshootBox" style="display:none;margin-top:12px;padding:14px;background:#fffbeb;border:1px solid #fde68a;border-radius:9px;font-size:12px;color:#92400e;line-height:1.7">
-          <strong>Common issues:</strong><br>
-          • <strong>"No course table found"</strong> — The sections table must be visible before you click the bookmarklet. Search for a course first.<br>
-          • <strong>Course name shows as UNKNOWN</strong> — The sections still import correctly. This just means the dropdown text couldn't be detected automatically.<br>
-          • <strong>Alert never appears</strong> — Your browser may block bookmarklets. Use the "Can't drag?" manual option in Step 1 to add it a different way.<br>
-          • <strong>"Could not read clipboard"</strong> — Click inside the text box above and press Ctrl+V (Windows) or Cmd+V (Mac) to paste manually.
-        </div>
-
-        <div class="or-divider">or skip login — use demo data</div>
-        <button class="import-btn secondary" onclick="loadDemo()" style="width:100%;padding:10px;font-size:13px">
-          Open with Sample DLSU Courses (no login needed)
-        </button>
-        <div class="demo-notice">
-          <span>🔒</span>
-          <span>Your ArChersHub username and password are <strong>never</strong> entered into this app. The bookmarklet runs entirely on DLSU's own page while you are already logged in.</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- PLANNER SCREEN -->
-  <div class="screen" id="plannerScreen">
-    <div class="left-panel">
-      <div class="panel-tabs">
-        <button class="ptab active" onclick="switchLTab('finder')">Courses</button>
-        <button class="ptab" onclick="switchLTab('added')">My Sections <span class="count-badge" id="cntBadge" style="display:none">0</span></button>
-      </div>
-      <div id="finderPane">
-        <div class="search-wrap">
-          <div class="search-inner">
-            <span class="search-ico">🔍</span>
-            <input class="search-in" id="searchIn" placeholder="Search course code or name…" oninput="filterList()">
-          </div>
-        </div>
-        <div class="list-wrap" id="courseList"></div>
-      </div>
-      <div id="addedPane" style="display:none;flex-direction:column;flex:1;overflow:hidden">
-        <div class="added-list-wrap" id="addedList"></div>
-      </div>
-    </div>
-    <div class="right-panel">
-      <div class="rtabs">
-        <button class="rtab active" onclick="switchRTab('sched')">Weekly View</button>
-        <button class="rtab" onclick="switchRTab('combos')">Combinations</button>
-      </div>
-      <div class="right-content">
-        <div id="schedView" class="grid-outer"></div>
-        <div id="combosView" style="display:none" class="combos-outer"></div>
-      </div>
-    </div>
+<div class="cal-wrap">
+  <div class="cal-hdr" id="calhdr"></div>
+  <div class="cal-body">
+    <div id="taxs" style="width:46px;flex-shrink:0;position:relative;"></div>
+    <div id="calb" style="flex:1;display:flex;position:relative;"></div>
   </div>
 </div>
 
+<p class="hint">Click a section to add it to your schedule · Click again to remove · Red outline = time conflict · ⚠ = almost full</p>
+
 <script>
-// ═══════════════════════════════════════════
-//  BOOKMARKLET — built with 5 fallback methods
-//  to detect course name on ArChersHub
-// ═══════════════════════════════════════════
-const BM_CODE = `javascript:(function(){
-  try{
-    var rows=document.querySelectorAll('table tbody tr');
-    if(!rows.length){
-      alert('ArSched: No sections table found.\\nMake sure you searched for a course first and the results are visible on screen.');
-      return;
-    }
-    var sections=[];
-    rows.forEach(function(r){
-      var cells=r.querySelectorAll('td');
-      if(cells.length<5)return;
-      sections.push({
-        type:cells[0]?cells[0].innerText.trim():'',
-        teacher:cells[1]?cells[1].innerText.trim():'',
-        credits:cells[2]?cells[2].innerText.trim():'3',
-        section:cells[3]?cells[3].innerText.trim():'',
-        schedules:cells[4]?cells[4].innerText.trim():'',
-        enrollCap:cells[5]?cells[5].innerText.trim():'30',
-        enrolled:cells[6]?cells[6].innerText.trim():'0'
-      });
-    });
-    var courseText='';
-    // Method 1: Select2 rendered element (most common on ArChersHub)
-    var s2=document.querySelector('.select2-selection__rendered');
-    if(s2){courseText=s2.getAttribute('title')||s2.textContent.trim();}
-    // Method 2: Select2 container title
-    if(!courseText||courseText==='Select Course'){
-      var s2c=document.querySelector('.select2-container--default .select2-selection');
-      if(s2c)courseText=s2c.getAttribute('title')||'';
-    }
-    // Method 3: Native <select> with a " - " separator (course code format)
-    if(!courseText){
-      document.querySelectorAll('select').forEach(function(sel){
-        var opt=sel.options[sel.selectedIndex];
-        if(opt&&opt.text&&opt.text.indexOf(' - ')>-1&&opt.text.trim().length>5)courseText=opt.text.trim();
-      });
-    }
-    // Method 4: Any heading that looks like a course code
-    if(!courseText){
-      document.querySelectorAll('h1,h2,h3,h4,.course-title,.course-name').forEach(function(el){
-        var t=el.innerText.trim();
-        if(t.indexOf(' - ')>-1&&t.length>5)courseText=t;
-      });
-    }
-    // Method 5: URL term ID as last resort
-    if(!courseText){
-      var m=window.location.href.match(/CourseFinder\\/index\\/(\\d+)/);
-      if(m)courseText='Term '+m[1]+' Import';
-    }
-    if(!courseText)courseText='Imported Course';
-    var data={course:courseText,sections:sections,source:'archershub',ts:Date.now()};
-    var json=JSON.stringify(data);
-    function fallbackCopy(json,count,name){
-      var ta=document.createElement('textarea');
-      ta.value=json;ta.style.cssText='position:fixed;top:0;left:0;opacity:0';
-      document.body.appendChild(ta);ta.focus();ta.select();
-      var ok=false;try{ok=document.execCommand('copy');}catch(e){}
-      document.body.removeChild(ta);
-      if(ok){
-        alert('ArSched: ✓ '+count+' section(s) for\\n"'+name+'"\\n\\nCopied! Switch back to ArSched and click "Paste from Clipboard".');
-      }else{
-        var box=document.createElement('div');
-        box.style.cssText='position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:99999;background:#fff;border:2px solid #006938;border-radius:10px;padding:16px;width:90%;max-width:500px;font-family:sans-serif;font-size:12px;box-shadow:0 8px 30px rgba(0,0,0,.2)';
-        box.innerHTML='<strong style="color:#006938">ArSched: '+count+' section(s) found</strong><br><br>Auto-copy failed. Select all the text below and copy it manually (Ctrl+A then Ctrl+C):<br><br><textarea id="_ast" style="width:100%;height:80px;font-size:10px;font-family:monospace">'+json+'</textarea><br><button onclick="this.parentNode.remove()" style="margin-top:8px;background:#006938;color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer">Close</button>';
-        document.body.appendChild(box);
-        var t2=document.getElementById('_ast');if(t2){t2.focus();t2.select();}
+const DAYS = ['MON','TUE','WED','THU','FRI','SAT','SUN'];
+const DLBL = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const START = 420, END = 1305, PPM = 0.6;
+const H = (END - START) * PPM;
+
+function fmt(m) {
+  const h = Math.floor(m / 60), mn = m % 60;
+  const ap = h >= 12 ? 'PM' : 'AM';
+  const hh = h > 12 ? h - 12 : h === 0 ? 12 : h;
+  return `${hh}:${mn.toString().padStart(2,'0')} ${ap}`;
+}
+
+const C = [
+  { bg:'#E6F1FB', tx:'#185FA5', bd:'#378ADD' }, // blue
+  { bg:'#E1F5EE', tx:'#0F6E56', bd:'#1D9E75' }, // teal
+  { bg:'#FAEEDA', tx:'#854F0B', bd:'#BA7517' }, // amber
+  { bg:'#EAF3DE', tx:'#3B6D11', bd:'#639922' }, // green
+  { bg:'#EEEDFE', tx:'#534AB7', bd:'#7F77DD' }, // purple
+  { bg:'#FAECE7', tx:'#993C1D', bd:'#D85A30' }, // coral
+  { bg:'#FBEAF0', tx:'#993556', bd:'#D4537E' }, // pink
+];
+
+const courses = [
+  {
+    id:'cpecog1', code:'CPECOG1', name:'CPE Elective 1 Lecture', type:'Lecture', cr:2, ci:0,
+    secs:[
+      { id:'E21', slots:[{d:'TUE',s:870,e:930},{d:'FRI',s:870,e:930}], en:4,  cap:22 },
+      { id:'E22', slots:[{d:'TUE',s:450,e:510},{d:'FRI',s:450,e:510}], en:2,  cap:22 },
+      { id:'E20', slots:[{d:'TUE',s:555,e:615},{d:'FRI',s:555,e:615}], en:21, cap:22 },
+    ]
+  },
+  {
+    id:'dsigpro', code:'DSIGPRO', name:'Digital Signal Processing', type:'Lecture', cr:3, ci:1,
+    secs:[
+      { id:'E32', slots:[{d:'MON',s:870,e:960},{d:'THU',s:870,e:960}],   en:13, cap:30 },
+      { id:'E31', slots:[{d:'MON',s:975,e:1065},{d:'THU',s:975,e:1065}], en:7,  cap:30 },
+      { id:'E30', slots:[{d:'MON',s:660,e:750},{d:'THU',s:660,e:750}],   en:14, cap:30 },
+    ]
+  },
+  {
+    id:'ochesaf', code:'OCHESAF', name:'Basic Occ. Health & Safety', type:'Lecture', cr:3, ci:2,
+    secs:[
+      { id:'E21', slots:[{d:'MON',s:870,e:960},{d:'THU',s:870,e:960}],   en:6,  cap:22 },
+      { id:'E20', slots:[{d:'MON',s:555,e:645},{d:'THU',s:555,e:645}],   en:7,  cap:22 },
+      { id:'E22', slots:[{d:'MON',s:765,e:855},{d:'THU',s:765,e:855}],   en:16, cap:22 },
+    ]
+  },
+  {
+    id:'lbycpf3', code:'LBYCPF3', name:'CPE Elective 1 Laboratory', type:'Lab', cr:1, ci:3,
+    secs:[
+      { id:'E25', slots:[{d:'MON',s:870,e:1050}], en:12, cap:25 },
+      { id:'E26', slots:[{d:'MON',s:570,e:750}],  en:4,  cap:25 },
+      { id:'E27', slots:[{d:'WED',s:570,e:750}],  en:10, cap:25 },
+    ]
+  },
+  {
+    id:'cpeprac', code:'CPEPRAC', name:'CPE Laws & Professional Practice', type:'Lecture', cr:2, ci:4,
+    secs:[
+      { id:'E22', slots:[{d:'TUE',s:870,e:930},{d:'FRI',s:870,e:930}],   en:11, cap:22 },
+      { id:'E20', slots:[{d:'TUE',s:660,e:720},{d:'FRI',s:660,e:720}],   en:7,  cap:22 },
+      { id:'E21', slots:[{d:'TUE',s:765,e:825},{d:'FRI',s:765,e:825}],   en:10, cap:22 },
+    ]
+  },
+  {
+    id:'lbycpa4', code:'LBYCPA4', name:'DSP Laboratory', type:'Lab', cr:1, ci:5,
+    secs:[
+      { id:'E25', slots:[{d:'TUE',s:870,e:1050}], en:17, cap:25 },
+      { id:'E26', slots:[{d:'TUE',s:450,e:630}],  en:10, cap:25 },
+      { id:'E27', slots:[{d:'TUE',s:660,e:840}],  en:10, cap:25 },
+    ]
+  },
+  {
+    id:'thscp4a', code:'THSCP4A', name:'CPE Practice and Design 1', type:'Capstone', cr:1, ci:6,
+    secs:[
+      { id:'E40', slots:[{d:'SAT',s:1080,e:1275}], en:24, cap:40 },
+      { id:'E41', slots:[{d:'SUN',s:600,e:630}],   en:2,  cap:40 },
+    ]
+  },
+];
+
+const sel = {};
+
+function getSlots() {
+  const out = [];
+  Object.entries(sel).forEach(([cid, sid]) => {
+    if (!sid) return;
+    const c = courses.find(x => x.id === cid);
+    const sec = c.secs.find(x => x.id === sid);
+    if (!sec) return;
+    sec.slots.forEach(slot => out.push({ ...slot, cid, color: C[c.ci] }));
+  });
+  return out;
+}
+
+function getConflicts(slots) {
+  const set = new Set();
+  for (let i = 0; i < slots.length; i++) {
+    for (let j = i + 1; j < slots.length; j++) {
+      const a = slots[i], b = slots[j];
+      if (a.d === b.d && a.s < b.e && b.s < a.e) {
+        set.add(a.cid);
+        set.add(b.cid);
       }
     }
-    if(navigator.clipboard&&navigator.clipboard.writeText){
-      navigator.clipboard.writeText(json).then(function(){
-        alert('ArSched: ✓ '+sections.length+' section(s) for\\n"'+courseText+'"\\n\\nCopied to clipboard! Switch back to ArSched and click "Paste from Clipboard".');
-      }).catch(function(){fallbackCopy(json,sections.length,courseText);});
-    }else{fallbackCopy(json,sections.length,courseText);}
-  }catch(e){alert('ArSched error: '+e.message+'\\n\\nMake sure you are on the ArChersHub Course Finder page with results visible.');}
-})();`;
-
-document.getElementById('bookmarkletLink').href = BM_CODE;
-document.getElementById('manualCode').textContent = BM_CODE;
-
-function toggleManual(){
-  var b=document.getElementById('manualBox');
-  b.style.display=b.style.display==='block'?'none':'block';
-}
-function copyBookmarkletCode(){
-  var code=document.getElementById('manualCode').textContent;
-  if(navigator.clipboard){
-    navigator.clipboard.writeText(code).then(()=>showToast('Bookmarklet code copied! Paste it as a bookmark URL.'));
-  }else{
-    var ta=document.createElement('textarea');ta.value=code;
-    document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
-    showToast('Bookmarklet code copied!');
   }
+  return set;
 }
 
-// ═══════════════════════════════════════════
-//  STATE
-// ═══════════════════════════════════════════
-const COLORS=['#006938','#0891b2','#7c3aed','#d97706','#dc2626','#059669','#db2777','#2563eb','#65a30d','#9333ea'];
-let courses=[],selected=[],openCards=new Set(),colorIdx=0,generatedCombos=[],previewCombo=null;
+function renderCards() {
+  const g = document.getElementById('cgrid');
+  g.innerHTML = '';
+  courses.forEach(course => {
+    const c = C[course.ci], cur = sel[course.id];
+    const btns = course.secs.map(sec => {
+      const on = cur === sec.id, af = sec.en >= sec.cap - 2;
+      const days = [...new Set(sec.slots.map(s => s.d))].join(' · ');
+      return `<button class="sbtn" onclick="pick('${course.id}','${sec.id}')"
+        style="border:${on ? `1.5px solid ${c.bd}` : '1px solid #e5e5e5'};background:${on ? c.bg : 'transparent'};">
+        <div>
+          <div style="font-size:12px;font-weight:600;color:${on ? c.tx : '#1a1a1a'};">Sec ${sec.id}</div>
+          <div style="font-size:10px;color:#888;">${days}</div>
+        </div>
+        <div style="font-size:11px;color:${af ? '#c0392b' : '#888'};font-weight:${af?'600':'400'};">
+          ${sec.en}/${sec.cap}${af ? ' ⚠' : ''}
+        </div>
+      </button>`;
+    }).join('');
 
-// ═══════════════════════════════════════════
-//  PARSE ArChersHub JSON
-// ═══════════════════════════════════════════
-function parseArHubData(json){
-  const raw=json.course||'';
-  const di=raw.indexOf(' - ');
-  const code=di>-1?raw.slice(0,di).trim():raw.trim()||'UNKNOWN';
-  const title=di>-1?raw.slice(di+3).trim():raw.trim()||'Unknown Course';
-  const units=json.sections.length>0?parseInt(json.sections[0].credits)||3:3;
-  const sections=json.sections.map(s=>{
-    const parsed=parseArHubSchedule(s.schedules);
-    return{sec:s.section||'?',prof:toTitleCase(s.teacher||'TBA'),days:parsed.days,time:parsed.time,timeLabel:parsed.label,room:s.type||'Lecture',slots:parseInt(s.enrollCap)||30,taken:parseInt(s.enrolled)||0,raw:s};
-  });
-  return{code,title,units,type:'ArChersHub',college:'DLSU',sections};
-}
-function parseArHubSchedule(schedStr){
-  if(!schedStr)return{days:'TBA',time:'0000-0000',label:'TBA'};
-  const lines=schedStr.split('\n').map(l=>l.replace(/\[|\]/g,'').trim()).filter(Boolean);
-  const dayMap={MON:'M',TUE:'T',WED:'W',THU:'H',FRI:'F',SAT:'S',SUN:'U'};
-  let days='',startTime='',endTime='';const labels=[];
-  lines.forEach(line=>{
-    const parts=line.split(/\s*-\s*/);
-    if(parts.length>=3){
-      const dayRaw=parts[0].trim().toUpperCase();
-      days+=(dayMap[dayRaw]||dayRaw.charAt(0));
-      const t1=to24h(parts[1].trim()),t2=to24h(parts[parts.length-1].trim());
-      if(!startTime)startTime=t1;if(!endTime)endTime=t2;
-      labels.push(`${parts[0].trim()} ${parts[1].trim()}–${parts[parts.length-1].trim()}`);
-    }
-  });
-  return{days:days||'TBA',time:startTime&&endTime?`${startTime}-${endTime}`:'0000-0000',label:labels.join(' / ')};
-}
-function to24h(str){
-  str=(str||'').trim();
-  const m=str.match(/(\d+):(\d+)\s*(AM|PM)/i);
-  if(!m)return'0000';
-  let h=parseInt(m[1]);const min=m[2],ampm=m[3].toUpperCase();
-  if(ampm==='PM'&&h!==12)h+=12;if(ampm==='AM'&&h===12)h=0;
-  return`${h.toString().padStart(2,'0')}${min}`;
-}
-function toTitleCase(str){return(str||'').replace(/\w\S*/g,t=>t.charAt(0).toUpperCase()+t.slice(1).toLowerCase());}
-function fmtTime(t){if(!t||t==='0000')return'';const h=parseInt(t.slice(0,2)),m=t.slice(2,4),sf=h>=12?'PM':'AM',hr=h>12?h-12:h===0?12:h;return`${hr}:${m} ${sf}`;}
-function fmtDays(days){
-  const map={M:'Mon',T:'Tue',W:'Wed',H:'Thu',F:'Fri',S:'Sat'};
-  let r=[],i=0;
-  while(i<days.length){if(days[i]==='T'&&i+1<days.length&&days[i+1]==='H'){r.push('Thu');i+=2;}else{r.push(map[days[i]]||days[i]);i++;}}
-  return r.join('/');
-}
-
-// ═══════════════════════════════════════════
-//  IMPORT LOGIC
-// ═══════════════════════════════════════════
-function showImport(){
-  document.getElementById('importScreen').style.display='flex';
-  document.getElementById('plannerScreen').classList.remove('active');
-  document.getElementById('importScreen').classList.add('active');
-  document.getElementById('backToImportBtn').style.display='';
-}
-function showPlanner(){
-  document.getElementById('importScreen').style.display='none';
-  document.getElementById('importScreen').classList.remove('active');
-  document.getElementById('plannerScreen').style.display='grid';
-  document.getElementById('plannerScreen').classList.add('active');
-  document.getElementById('backToImportBtn').style.display='';
-  document.getElementById('genBtnHdr').style.display='';
-}
-function importPasted(){
-  const raw=document.getElementById('pasteArea').value.trim();
-  if(!raw){showErr('The paste area is empty. Copy data from ArChersHub using the bookmarklet first.');return;}
-  processImportJSON(raw);
-}
-async function tryClipboard(){
-  try{
-    const txt=await navigator.clipboard.readText();
-    if(!txt||!txt.includes('"sections"')){showErr('Clipboard does not contain ArSched data. Make sure you clicked the bookmarklet on the Course Finder page first.');return;}
-    document.getElementById('pasteArea').value=txt;
-    processImportJSON(txt);
-  }catch(e){showErr('Could not read clipboard automatically. Please click inside the text box above and press Ctrl+V (or Cmd+V on Mac) to paste manually.');}
-}
-function processImportJSON(raw){
-  document.getElementById('importError').style.display='none';
-  document.getElementById('importSuccess').style.display='none';
-  try{
-    const json=JSON.parse(raw);
-    if(!json.sections||!Array.isArray(json.sections))throw new Error('Missing sections array — did you use the ArSched bookmarklet?');
-    if(json.sections.length===0)throw new Error('No sections were found in the data. The table may have been empty.');
-    const course=parseArHubData(json);
-    const existing=courses.find(c=>c.code===course.code);
-    let msg='';
-    if(existing){
-      let added=0;
-      course.sections.forEach(s=>{if(!existing.sections.find(x=>x.sec===s.sec)){existing.sections.push(s);added++;}});
-      msg=`✓ Updated ${course.code} — added ${added} new section(s). Total: ${existing.sections.length} sections.`;
-    }else{
-      courses.push(course);
-      msg=`✓ Imported "${course.code}: ${course.title}" — ${course.sections.length} section(s) ready.`;
-    }
-    const okEl=document.getElementById('importSuccess');okEl.textContent=msg;okEl.style.display='block';
-    showPlanner();filterList();renderSchedule();
-    document.getElementById('pasteArea').value='';
-  }catch(e){showErr('Could not parse data: '+e.message);}
-}
-function showErr(msg){const el=document.getElementById('importError');el.textContent='⚠️ '+msg;el.style.display='block';}
-function showToast(msg){
-  let t=document.getElementById('toast');
-  if(!t){t=document.createElement('div');t.id='toast';Object.assign(t.style,{position:'fixed',bottom:'20px',right:'20px',background:COLORS[0],color:'#fff',padding:'10px 16px',borderRadius:'9px',fontSize:'13px',fontFamily:'var(--font)',zIndex:'999',fontWeight:'500',maxWidth:'300px',lineHeight:'1.4',boxShadow:'0 4px 12px rgba(0,0,0,.15)',transition:'opacity .3s'});document.body.appendChild(t);}
-  t.textContent='✓ '+msg;t.style.opacity='1';clearTimeout(t._to);t._to=setTimeout(()=>{t.style.opacity='0';},3200);
-}
-
-// ═══════════════════════════════════════════
-//  DEMO DATA (includes DSIGPRO from screenshot)
-// ═══════════════════════════════════════════
-function loadDemo(){
-  courses=[
-    {code:'DSIGPRO',title:'Digital Signal Processing Lecture',units:3,type:'CORE',college:'GCOE',sections:[
-      {sec:'E32',prof:'Arada, Gerald Pacaba',days:'MH',time:'1430-1600',timeLabel:'Mon/Thu 2:30–4:00 PM',room:'Lecture',slots:30,taken:0},
-      {sec:'E31',prof:'Arada, Gerald Pacaba',days:'MH',time:'1615-1745',timeLabel:'Mon/Thu 4:15–5:45 PM',room:'Lecture',slots:30,taken:0},
-      {sec:'E30',prof:'Arada, Gerald Pacaba',days:'MH',time:'1100-1230',timeLabel:'Mon/Thu 11:00 AM–12:30 PM',room:'Lecture',slots:30,taken:0},
-    ]},
-    {code:'GEMATMW',title:'Mathematics in the Modern World',units:3,type:'GE',college:'GCOE',sections:[
-      {sec:'A11',prof:'Dela Cruz, Rosalyn M.',days:'MW',time:'0730-0900',timeLabel:'Mon/Wed 7:30–9:00 AM',room:'LS106',slots:40,taken:37},
-      {sec:'A12',prof:'Santos, Jerome B.',days:'TH',time:'0900-1030',timeLabel:'Tue/Thu 9:00–10:30 AM',room:'LS108',slots:40,taken:30},
-      {sec:'A13',prof:'Reyes, Maria Criselda V.',days:'MWF',time:'1030-1130',timeLabel:'MWF 10:30–11:30 AM',room:'GK205',slots:40,taken:39},
-      {sec:'A14',prof:'Tolentino, Allan D.',days:'TH',time:'1200-1330',timeLabel:'Tue/Thu 12:00–1:30 PM',room:'LS106',slots:40,taken:25},
-    ]},
-    {code:'GEETHIC',title:'Ethics',units:3,type:'GE',college:'CLA',sections:[
-      {sec:'A11',prof:'Aquino, Francisco D.',days:'MWF',time:'0730-0830',timeLabel:'MWF 7:30–8:30 AM',room:'AG1908',slots:40,taken:40},
-      {sec:'A12',prof:'Salazar, Diana Grace V.',days:'TH',time:'0730-0900',timeLabel:'Tue/Thu 7:30–9:00 AM',room:'GK206',slots:40,taken:35},
-      {sec:'A13',prof:'Morales, Joel C.',days:'MWF',time:'1030-1130',timeLabel:'MWF 10:30–11:30 AM',room:'AG1907',slots:40,taken:32},
-      {sec:'A14',prof:'Aquino, Francisco D.',days:'MW',time:'1200-1330',timeLabel:'Mon/Wed 12:00–1:30 PM',room:'LS212',slots:40,taken:38},
-    ]},
-    {code:'CCPROG1',title:'Programming 1',units:3,type:'CORE',college:'CCS',sections:[
-      {sec:'EQ1',prof:'Silva, Jerome A.',days:'MWF',time:'0730-0830',timeLabel:'MWF 7:30–8:30 AM',room:'GK211',slots:35,taken:35},
-      {sec:'EQ2',prof:'Castillo, Marie E.',days:'TH',time:'0900-1030',timeLabel:'Tue/Thu 9:00–10:30 AM',room:'GK212',slots:35,taken:32},
-      {sec:'EQ3',prof:'Silva, Jerome A.',days:'MWF',time:'1130-1230',timeLabel:'MWF 11:30 AM–12:30 PM',room:'GK211',slots:35,taken:30},
-      {sec:'EQ4',prof:'Castillo, Marie E.',days:'TH',time:'1330-1500',timeLabel:'Tue/Thu 1:30–3:00 PM',room:'GK213',slots:35,taken:28},
-    ]},
-    {code:'GESPORT',title:'Sports',units:2,type:'GE',college:'CLA',sections:[
-      {sec:'A11',prof:'Punzalan, John M.',days:'M',time:'0730-0930',timeLabel:'Mon 7:30–9:30 AM',room:'GYM-A',slots:25,taken:25},
-      {sec:'A12',prof:'Ramos, Karen F.',days:'T',time:'0730-0930',timeLabel:'Tue 7:30–9:30 AM',room:'GYM-B',slots:25,taken:20},
-      {sec:'A13',prof:'Punzalan, John M.',days:'W',time:'1300-1500',timeLabel:'Wed 1:00–3:00 PM',room:'GYM-A',slots:25,taken:23},
-      {sec:'A14',prof:'Ramos, Karen F.',days:'H',time:'1300-1500',timeLabel:'Thu 1:00–3:00 PM',room:'GYM-B',slots:25,taken:18},
-      {sec:'A16',prof:'Garcia, Carlos P.',days:'S',time:'0730-0930',timeLabel:'Sat 7:30–9:30 AM',room:'GYM-A',slots:25,taken:22},
-    ]},
-  ];
-  showPlanner();filterList();renderSchedule();
-}
-
-// ═══════════════════════════════════════════
-//  COURSE LIST
-// ═══════════════════════════════════════════
-function filterList(){
-  const q=(document.getElementById('searchIn').value||'').toLowerCase();
-  renderList(courses.filter(c=>c.code.toLowerCase().includes(q)||c.title.toLowerCase().includes(q)||(c.type||'').toLowerCase().includes(q)||(c.college||'').toLowerCase().includes(q)));
-}
-function renderList(list){
-  const wrap=document.getElementById('courseList');
-  if(!list.length){wrap.innerHTML='<div class="empty"><div class="empty-ico">🔍</div>No courses found.<br>Import courses or load demo data.</div>';return;}
-  wrap.innerHTML='';
-  list.forEach(course=>{
-    const hasSel=selected.some(s=>s.courseCode===course.code);
-    const isOpen=openCards.has(course.code);
-    const selCount=selected.filter(s=>s.courseCode===course.code).length;
-    const el=document.createElement('div');el.className='cc'+(hasSel?' has-sel':'');
-    el.innerHTML=`<div class="cc-head" onclick="toggleCard('${course.code}')"><div class="cc-info"><div class="cc-code">${course.code}</div><div class="cc-name">${course.title}</div><div class="cc-meta"><span class="chip">${course.units} unit${course.units>1?'s':''}</span><span class="chip g">${course.type||'GE'}</span><span class="chip g">${course.college||'DLSU'}</span>${selCount?`<span class="chip">${selCount} added</span>`:''}</div></div><span class="chev${isOpen?' open':''}">▶</span></div>${isOpen?renderSecs(course):''}`;
-    wrap.appendChild(el);
+    const el = document.createElement('div');
+    el.className = 'ccard';
+    el.style.border = cur ? `1.5px solid ${c.bd}` : '1px solid #e5e5e5';
+    el.innerHTML = `
+      <span class="pill" style="background:${c.bg};color:${c.tx};">${course.type} · ${course.cr} unit${course.cr > 1 ? 's' : ''}</span>
+      <div style="font-size:13px;font-weight:600;margin-bottom:2px;">${course.code}</div>
+      <div style="font-size:11px;color:#888;margin-bottom:8px;">${course.name}</div>
+      ${btns}`;
+    g.appendChild(el);
   });
 }
-function renderSecs(course){
-  let h='<div class="secs">';
-  course.sections.forEach(sec=>{
-    const isSel=selected.some(s=>s.courseCode===course.code&&s.sec===sec.sec);
-    const avail=sec.slots-sec.taken;
-    const slotsHtml=avail>0?`<span class="slots">${avail} open</span>`:`<span class="slots" style="color:var(--red)">FULL</span>`;
-    const schedLabel=sec.timeLabel||(sec.days!=='TBA'?`${fmtDays(sec.days)} ${fmtTime(sec.time.split('-')[0])}–${fmtTime(sec.time.split('-')[1])}`:'TBA');
-    h+=`<div class="sec-row${isSel?' sel':''}" onclick="toggleSec('${course.code}','${sec.sec}')"><div class="sc">${sec.sec}</div><div class="sd"><div class="ss">${schedLabel}</div><div class="sp">${sec.prof}</div><div class="sr">${sec.room}</div></div><div class="sr-right">${slotsHtml}<button class="add-btn${isSel?' added':''}">${isSel?'✓ Added':'+ Add'}</button></div></div>`;
-  });
-  return h+'</div>';
-}
-function toggleCard(code){if(openCards.has(code))openCards.delete(code);else openCards.add(code);filterList();}
-function toggleSec(courseCode,secCode){
-  const idx=selected.findIndex(s=>s.courseCode===courseCode&&s.sec===secCode);
-  if(idx!==-1){selected.splice(idx,1);}
-  else{
-    const course=courses.find(c=>c.code===courseCode);
-    const sec=course.sections.find(s=>s.sec===secCode);
-    if(checkConflict(sec)){showToast('⚠️ Time conflict with an existing section!');return;}
-    selected.push({courseCode,sec:secCode,colorIdx:colorIdx++%COLORS.length,secData:sec});
+
+function renderCal() {
+  // Header
+  document.getElementById('calhdr').innerHTML =
+    `<div style="width:46px;flex-shrink:0;"></div>` +
+    DLBL.map(d => `<div style="flex:1;text-align:center;padding:7px 2px;font-size:11px;font-weight:600;color:#888;">${d}</div>`).join('');
+
+  // Time axis
+  const ta = document.getElementById('taxs');
+  ta.style.cssText = `width:46px;flex-shrink:0;position:relative;height:${H}px;`;
+  let th = '';
+  for (let m = START; m <= END; m += 60) {
+    const top = (m - START) * PPM;
+    th += `<div style="position:absolute;top:${top}px;left:0;right:4px;font-size:10px;color:#aaa;text-align:right;transform:translateY(-50%);line-height:1;white-space:nowrap;">${fmt(m)}</div>`;
   }
-  updateBadge();filterList();renderAdded();renderSchedule();
-}
-function checkConflict(newSec){
-  if(!newSec||newSec.days==='TBA')return false;
-  const ns=parseSlots(newSec.days,newSec.time);
-  for(const s of selected){if(!s.secData||s.secData.days==='TBA')continue;const es=parseSlots(s.secData.days,s.secData.time);for(const a of ns)for(const b of es)if(a.day===b.day&&a.s<b.e&&a.e>b.s)return true;}
-  return false;
-}
+  ta.innerHTML = th;
 
-// ═══════════════════════════════════════════
-//  ADDED PANEL
-// ═══════════════════════════════════════════
-function updateBadge(){const b=document.getElementById('cntBadge');b.textContent=selected.length;b.style.display=selected.length?'inline':'none';}
-function renderAdded(){
-  const el=document.getElementById('addedList');
-  if(!selected.length){el.innerHTML='<div class="empty"><div class="empty-ico">📅</div>No sections added yet.<br>Click a course section to add it.</div>';return;}
-  el.innerHTML='';
-  selected.forEach((s,i)=>{
-    const course=courses.find(c=>c.code===s.courseCode);
-    const sec=s.secData;const color=COLORS[s.colorIdx];
-    const schedLabel=sec?.timeLabel||`${fmtDays(sec?.days||'')} ${fmtTime((sec?.time||'').split('-')[0])}`;
-    const div=document.createElement('div');div.className='added-item';
-    div.innerHTML=`<div class="added-dot" style="background:${color}"></div><div class="added-info"><div class="ai-code">${s.courseCode} · ${s.sec}</div><div class="ai-name">${course?.title||''}</div><div class="ai-sched">${schedLabel}</div></div><button class="rm-btn" onclick="removeSel(${i})">×</button>`;
-    el.appendChild(div);
-  });
-}
-function removeSel(i){selected.splice(i,1);updateBadge();filterList();renderAdded();renderSchedule();}
+  // Calendar body
+  const cb = document.getElementById('calb');
+  cb.style.cssText = `flex:1;display:flex;position:relative;height:${H}px;`;
 
-// ═══════════════════════════════════════════
-//  SCHEDULE GRID
-// ═══════════════════════════════════════════
-const DAYS=['M','T','W','H','F','S'],DLBL=['Mon','Tue','Wed','Thu','Fri','Sat'];
-const SH=7,EH=20,SLH=30;
-function parseTime(t){return parseInt(t.slice(0,2))*60+parseInt(t.slice(2,4));}
-function parseSlots(days,time){
-  if(!days||!time||days==='TBA')return[];
-  const parts=time.split('-');if(parts.length<2)return[];
-  const s=parseTime(parts[0]),e=parseTime(parts[1]);
-  let r=[],i=0;
-  while(i<days.length){if(days[i]==='T'&&i+1<days.length&&days[i+1]==='H'){r.push({day:'H',s,e});i+=2;}else{r.push({day:days[i],s,e});i++;}}
-  return r;
-}
-function renderSchedule(overrideSel){
-  const view=document.getElementById('schedView');
-  const secs=overrideSel||selected;
-  if(!secs.length){view.innerHTML='<div class="empty" style="padding-top:80px"><div class="empty-ico">🗓️</div>Add sections from the left panel<br>to see your weekly schedule here.</div>';return;}
-  const bmap={};DAYS.forEach(d=>bmap[d]=[]);
-  secs.forEach(s=>{
-    const course=courses.find(c=>c.code===s.courseCode);
-    if(!s.secData||s.secData.days==='TBA')return;
-    const color=COLORS[s.colorIdx];
-    parseSlots(s.secData.days,s.secData.time).forEach(slot=>{if(bmap[slot.day])bmap[slot.day].push({...slot,code:s.courseCode,sec:s.sec,color,title:course?.title});});
-  });
-  const totalSlots=(EH-SH)*2;
-  let h=`<div style="overflow-x:auto"><div class="week-grid">`;
-  h+='<div class="gd-hdr"></div>';
-  DLBL.forEach((d,i)=>h+=`<div class="gd-hdr${i>=4?' we':''}">${d}</div>`);
-  for(let slot=0;slot<totalSlots;slot++){
-    const min=SH*60+slot*30,hr=Math.floor(min/60),m=min%60;
-    const label=m===0?`${hr>12?hr-12:hr}${hr>=12?'p':'a'}`:'';
-    h+=`<div class="gt-lbl" style="height:${SLH}px">${label}</div>`;
-    DAYS.forEach(day=>{
-      const blocks=bmap[day].filter(b=>b.s===min);
-      h+=`<div class="gc" style="height:${SLH}px">`;
-      blocks.forEach(b=>{const dSlots=(b.e-b.s)/30,bh=dSlots*SLH-2;h+=`<div class="gb" style="top:1px;height:${bh}px;background:${hex2rgba(b.color,.15)};border-left:3px solid ${b.color};color:${b.color}"><span class="gb-code">${b.code}</span><span class="gb-sec">${b.sec}</span></div>`;});
-      h+='</div>';
-    });
+  const slots = getSlots();
+  const conflicts = getConflicts(slots);
+
+  // Hour lines
+  let hlHtml = '';
+  for (let m = START; m <= END; m += 60) {
+    const top = (m - START) * PPM;
+    hlHtml += `<div style="position:absolute;top:${top}px;left:0;right:0;border-top:1px solid #f0f0ee;pointer-events:none;z-index:0;"></div>`;
   }
-  h+='</div></div>';
-  view.innerHTML=h;
-}
-function hex2rgba(hex,a){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return`rgba(${r},${g},${b},${a})`;}
 
-// ═══════════════════════════════════════════
-//  COMBINATIONS
-// ═══════════════════════════════════════════
-function generateCombos(){
-  const view=document.getElementById('combosView');
-  const byCourse={};selected.forEach(s=>{if(!byCourse[s.courseCode])byCourse[s.courseCode]=[];byCourse[s.courseCode].push(s);});
-  const keys=Object.keys(byCourse);
-  if(!keys.length){view.innerHTML='<div class="empty" style="padding-top:60px"><div class="empty-ico">⚡</div>Add some sections first, then generate combinations.</div>';return;}
-  const allByCourse=keys.map(code=>{const course=courses.find(c=>c.code===code);return course.sections.map(sec=>({courseCode:code,sec:sec.sec,colorIdx:selected.find(s=>s.courseCode===code&&s.sec===sec.sec)?.colorIdx??(colorIdx++%COLORS.length),secData:sec}));});
-  const combos=[];
-  function bt(ci,cur){
-    if(ci===allByCourse.length){combos.push([...cur]);return;}
-    for(const sec of allByCourse[ci]){let ok=true;for(const p of cur)if(p.secData.days!=='TBA'&&sec.secData.days!=='TBA'&&conflictBetween(p.secData,sec.secData)){ok=false;break;}if(ok){cur.push(sec);bt(ci+1,cur);cur.pop();}}
-  }
-  bt(0,[]);generatedCombos=combos;renderCombos();
-}
-function conflictBetween(a,b){const sa=parseSlots(a.days,a.time),sb=parseSlots(b.days,b.time);for(const x of sa)for(const y of sb)if(x.day===y.day&&x.s<y.e&&x.e>y.s)return true;return false;}
-function renderCombos(){
-  const view=document.getElementById('combosView');
-  if(!generatedCombos.length){view.innerHTML='<div class="empty" style="padding-top:60px"><div class="empty-ico">😕</div>No conflict-free combinations found.<br>Try adding more sections from different courses.</div>';return;}
-  let h=`<button class="gen-btn-big" onclick="generateCombos()">⚡ Regenerate Schedules</button><div class="combos-toolbar"><div><div class="combos-title">${generatedCombos.length} possible schedule${generatedCombos.length!==1?'s':''}</div><div class="combos-sub">Click any schedule to preview it on the Weekly View</div></div><select class="sort-sel" onchange="sortCombos(this.value)"><option value="default">Default order</option><option value="early">Earliest start</option><option value="late">Latest start</option><option value="compact">Most compact</option></select></div>`;
-  generatedCombos.slice(0,60).forEach((combo,i)=>{
-    const tags=combo.map(s=>`<span class="combo-tag" style="background:${hex2rgba(COLORS[s.colorIdx],.14)};color:${COLORS[s.colorIdx]}">${s.courseCode} ${s.sec}</span>`).join('');
-    const allSlots=combo.flatMap(s=>s.secData.days!=='TBA'?parseSlots(s.secData.days,s.secData.time):[]);
-    const earliest=allSlots.length?Math.min(...allSlots.map(s=>s.s)):0,latest=allSlots.length?Math.max(...allSlots.map(s=>s.e)):0;
-    const fmtM=m=>{const h=Math.floor(m/60),mn=m%60,sf=h>=12?'PM':'AM';return`${h>12?h-12:h===0?12:h}:${mn.toString().padStart(2,'0')} ${sf}`;};
-    h+=`<div class="combo-card" id="cc${i}" onclick="previewC(${i})"><div class="combo-hdr"><span class="combo-n">#${i+1}</span><div class="combo-tags">${tags}</div><span class="combo-time">${earliest?fmtM(earliest)+'–'+fmtM(latest):''}</span></div></div>`;
-  });
-  if(generatedCombos.length>60)h+=`<div style="text-align:center;font-size:12px;color:var(--dim);padding:10px">Showing first 60 of ${generatedCombos.length}</div>`;
-  view.innerHTML=h;
-}
-function previewC(i){
-  previewCombo=generatedCombos[i];switchRTab('sched');renderSchedule(previewCombo);
-  const view=document.getElementById('schedView');const banner=document.createElement('div');banner.className='preview-banner';
-  banner.innerHTML=`<span>Previewing Combination #${i+1}</span><a href="#" onclick="clearPreview(event)" style="color:var(--green);font-weight:500;text-decoration:none;font-size:12px">← Back to my selection</a>`;
-  view.insertBefore(banner,view.firstChild);
-}
-function clearPreview(e){if(e)e.preventDefault();previewCombo=null;renderSchedule();}
-function sortCombos(by){
-  const getE=c=>Math.min(...c.flatMap(s=>s.secData.days!=='TBA'?parseSlots(s.secData.days,s.secData.time).map(x=>x.s):[Infinity]));
-  const getSpan=c=>{const all=c.flatMap(s=>s.secData.days!=='TBA'?parseSlots(s.secData.days,s.secData.time):[]);return all.length?Math.max(...all.map(s=>s.e))-Math.min(...all.map(s=>s.s)):0;};
-  if(by==='early')generatedCombos.sort((a,b)=>getE(a)-getE(b));
-  else if(by==='late')generatedCombos.sort((a,b)=>getE(b)-getE(a));
-  else if(by==='compact')generatedCombos.sort((a,b)=>getSpan(a)-getSpan(b));
-  renderCombos();
+  // Day columns
+  const cols = DAYS.map((day, di) => {
+    const ds = slots.filter(s => s.d === day);
+    const slotsHtml = ds.map(slot => {
+      const top = (slot.s - START) * PPM;
+      const ht = (slot.e - slot.s) * PPM;
+      const course = courses.find(c => c.id === slot.cid);
+      const isC = conflicts.has(slot.cid);
+      const col = slot.color;
+      return `<div style="position:absolute;left:2px;right:2px;top:${top}px;height:${ht}px;
+        background:${col.bg};border:${isC ? `1.5px solid #e74c3c` : `1px solid ${col.bd}`};
+        border-radius:5px;overflow:hidden;padding:3px 5px;z-index:2;box-sizing:border-box;">
+        <div style="font-size:10px;font-weight:600;color:${isC ? '#c0392b' : col.tx};line-height:1.3;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">${course.code}</div>
+        ${ht > 28 ? `<div style="font-size:9px;color:${col.tx};opacity:0.8;white-space:nowrap;overflow:hidden;">${fmt(slot.s)}–${fmt(slot.e)}</div>` : ''}
+        ${isC ? `<div style="position:absolute;top:3px;right:3px;width:5px;height:5px;border-radius:50%;background:#e74c3c;"></div>` : ''}
+      </div>`;
+    }).join('');
+    return `<div style="flex:1;position:relative;${di > 0 ? 'border-left:1px solid #f0f0ee;' : ''}">${slotsHtml}</div>`;
+  }).join('');
+
+  cb.innerHTML = `<div style="position:absolute;inset:0;pointer-events:none;">${hlHtml}</div>${cols}`;
+
+  // Stats
+  const added = Object.entries(sel).filter(([k, v]) => v).map(([k]) => k);
+  const cr = added.reduce((a, cid) => a + courses.find(c => c.id === cid).cr, 0);
+  document.getElementById('s-cr').textContent = cr;
+  document.getElementById('s-cnt').textContent = `${added.length} / 7`;
+  const nc = conflicts.size;
+  const ce = document.getElementById('s-conf');
+  ce.textContent = nc ? `${nc} course${nc > 1 ? 's' : ''}` : 'none';
+  ce.style.color = nc ? '#c0392b' : '#22a06b';
 }
 
-// ═══════════════════════════════════════════
-//  TAB SWITCHING
-// ═══════════════════════════════════════════
-function switchLTab(tab){
-  document.getElementById('finderPane').style.display=tab==='finder'?'':'none';
-  document.getElementById('addedPane').style.display=tab==='added'?'flex':'none';
-  document.querySelectorAll('.ptab').forEach((el,i)=>el.classList.toggle('active',(i===0&&tab==='finder')||(i===1&&tab==='added')));
-  if(tab==='added')renderAdded();
-}
-function switchRTab(tab){
-  document.getElementById('schedView').style.display=tab==='sched'?'':'none';
-  document.getElementById('combosView').style.display=tab==='combos'?'':'none';
-  document.querySelectorAll('.rtab').forEach((el,i)=>el.classList.toggle('active',(i===0&&tab==='sched')||(i===1&&tab==='combos')));
-  if(tab==='combos'&&!generatedCombos.length)generateCombos();
-}
+window.pick = function(cid, sid) {
+  sel[cid] === sid ? delete sel[cid] : sel[cid] = sid;
+  renderCards();
+  renderCal();
+};
+
+renderCards();
+renderCal();
 </script>
 </body>
 </html>
