@@ -231,11 +231,12 @@ function renderCards(sel) {
     const btns = course.secs.map(sec => {
       const on = cur === sec.id, af = sec.en >= sec.cap - 2;
       const days = [...new Set(sec.slots.map(s => s.d))].join(' · ');
+      const timeStr = `${fmt(sec.slots[0].s)} – ${fmt(sec.slots[0].e)}`;
       return `<button class="sbtn" onclick="pick('${course.id}','${sec.id}')"
         style="border:${on ? `1.5px solid ${c.bd}` : '1px solid #e5e5e5'};background:${on ? c.bg : 'transparent'};">
         <div style="flex:1;min-width:0;">
           <div style="font-size:12px;font-weight:600;color:${on ? c.tx : '#1a1a1a'};">Sec ${sec.id}</div>
-          <div style="font-size:10px;color:#999;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${days}</div>
+          <div style="font-size:10px;color:#999;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${days} · ${timeStr}</div>
           <div style="font-size:10px;color:${on ? c.tx : '#aaa'};opacity:0.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">👤 ${esc(sec.prof)}</div>
         </div>
         <div style="font-size:11px;color:${af ? '#c0392b' : '#999'};font-weight:${af ? '600' : '400'};flex-shrink:0;margin-left:6px;">
@@ -285,10 +286,8 @@ function renderCal(sel) {
       const top = (slot.s - START) * PPM, ht = (slot.e - slot.s) * PPM;
       const course = courses.find(c => c.id === slot.cid);
       const isC = conflicts.has(slot.cid), col = slot.color;
-      // Show prof if block is tall enough (≥ 55px)
-      const profLine = ht >= 55
-        ? `<div style="font-size:8.5px;color:${isC ? '#c0392b' : col.tx};opacity:0.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;">👤 ${esc(slot.prof)}</div>`
-        : '';
+      // Always show prof — parent overflow:hidden clips it on tiny blocks
+      const profLine = `<div style="font-size:8.5px;color:${isC ? '#c0392b' : col.tx};opacity:0.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;">👤 ${esc(slot.prof)}</div>`;
       return `<div style="position:absolute;left:2px;right:2px;top:${top}px;height:${ht}px;
         background:${col.bg};border:${isC ? '1.5px solid #e74c3c' : `1px solid ${col.bd}`};
         border-radius:5px;overflow:hidden;padding:3px 5px;z-index:2;box-sizing:border-box;">
