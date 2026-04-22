@@ -329,8 +329,8 @@ function renderSidebar(sel) {
     // Group slots by time (show unique day combos)
     const days = [...new Set(sec.slots.map(s => s.d))].join('/');
     const timeStr = `${fmt(sec.slots[0].s)} – ${fmt(sec.slots[0].e)}`;
-    return `<div style="padding:6px 8px;margin-bottom:5px;border-radius:7px;background:${col.bg};border:1px solid ${col.bd};font-size:11px;color:${col.tx};font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-      ${course.code} – ${sec.id} – ${timeStr}
+    return `<div style="padding:6px 8px;margin-bottom:5px;border-radius:7px;background:${col.bg};border:1px solid ${col.bd};font-size:11px;color:${col.tx};font-weight:500;word-break:break-word;line-height:1.4;">
+      ${course.code} – ${sec.id} – ${days} – ${timeStr}
     </div>`;
   }).join('');
 }
